@@ -87,12 +87,13 @@ M.availability_skills.form.getNode = function(json) {
                 };
 
                 var request = Fragment.loadFragment('availability_skills', 'load_skill_levels', contextID, params);
-
-                request.then(function(html, js) {
+                request.then(function(html) {
                     selector.set('innerHTML', html || emptylevel);
-
+                    // Set the first value as selected option.
+                    selector.set('value', selector.get('options').item(0).get('value'));
+                    // Whichever the input value changed, just update the form.
+                    M.core_availability.form.update();
                     resolve(true);
-
                 }).catch(reject);
 
             });
@@ -116,9 +117,9 @@ M.availability_skills.form.getNode = function(json) {
 
     // Create HTML structure
     // Add to the choose skill in the html node.
-    var html = '<span class="col-form-label pr-3"> ' + getString('title') + '</span>' +
-               '<span class="availability-group form-group"><label> <span class="accesshide">' + getString('chooseskill') +
-                '</span><select class="custom-select" name="skills" title="' + getString('chooseskill') + '">' +
+    var html = '<span class="col-form-label"> ' + getString('title') + '</span>' +
+               '<span class="availability-group mb-3 d-flex"><label> <span class="accesshide">' + getString('chooseskill') +
+                '</span><select class="form-select" name="skills" title="' + getString('chooseskill') + '">' +
                 '<option value="0">' + getString('choosedots', 'moodle') + '</option>';
     Y.each(this.skills, function(skill) {
         html += '<option value="' + skill.id + '">' + skill.name + '</option>';
@@ -126,7 +127,7 @@ M.availability_skills.form.getNode = function(json) {
 
     // Added the choose condition type to the html node.
     html += '</select></label> <label> <span class="accesshide">' + getString('choosetype') + " </span>" +
-            '<select class="custom-select" ' + 'name="ct" title="' + getString('choosetype') + '">' +
+            '<select class="form-select" ' + 'name="ct" title="' + getString('choosetype') + '">' +
             '<option value="0">' + getString('notinlevel') + '</option>' +
             '<option value="1">' + getString('exactlevel') + '</option>' +
             '<option value="2">' + getString('selectlevelorhigher') + '</option>' +
@@ -141,7 +142,7 @@ M.availability_skills.form.getNode = function(json) {
 
     // Add the level.
     html += '<span class="accesshide">' + getString('chooselevel') + '</span>'
-        + '<select class="custom-select" name="level" title="' + getString('chooselevel') + '">' + emptylevel
+        + '<select class="form-select" name="level" title="' + getString('chooselevel') + '">' + emptylevel
         + '</select></label> <br><br>';
 
     // Add the points input html node.
@@ -150,7 +151,7 @@ M.availability_skills.form.getNode = function(json) {
             getString('points') + '" placeholder="' + getString('points') + '" /></label></span>';
 
     // Created the html node.
-    var node = Y.Node.create('<span class="form-inline">' + html + '</span>');
+    var node = Y.Node.create('<span class="d-flex flex-wrap align-items-center">' + html + '</span>');
 
     // Set initial skill value.
     if (json.skill !== undefined &&
@@ -181,13 +182,15 @@ M.availability_skills.form.getNode = function(json) {
     var skill = select.get('value');
     updateSkillLevels(skill, levelselect, contextID, emptylevel).then(function() {
         setInitialValue(node, json.level);
+        // Whichever the input value changed, just update the form.
+        M.core_availability.form.update();
         return;
     }).catch();
 
     // Event listner to init the levels option element update
     select.on('change', function(e) {
         var value = e.target.get('value');
-        updateSkillLevels(value, levelselect, contextID, emptylevel);
+        updateSkillLevels(value, levelselect, contextID, emptylevel); // Update the skill levels.
     });
 
     // Add event handlers (first time only).
@@ -203,7 +206,7 @@ M.availability_skills.form.getNode = function(json) {
         root.delegate('valuechange', function() {
             // Whichever the input value changed, just update the form.
             M.core_availability.form.update();
-       }, '.availability_skills input[name=points]');
+        }, '.availability_skills input[name=points]');
     }
 
     return node;
@@ -217,14 +220,15 @@ M.availability_skills.form.getNode = function(json) {
  */
 M.availability_skills.form.fillValue = function(value, node) {
 
-    // Skill
+    // Skill.
     value.skill = parseInt(node.one('select[name=skills]').get('value'), 10);
-    // Type
+    // Type.
     value.ct = parseInt(node.one('select[name=ct]').get('value'), 10);
-    // Points
+    // Points.
     value.points = parseInt(node.one('input[name=points]').get('value'), 10);
     // Levels.
-    value.level = parseInt(node.one('select[name=level]').get('value'), 0);
+    value.level = parseInt(node.one('select[name=level]').get('value'), 10);
+
 };
 
 /**
