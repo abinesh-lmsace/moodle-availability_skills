@@ -25,9 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'availability_skills';
-$plugin->version = 2025042100;
+$plugin->version = 2025042300;
 $plugin->requires = 2022041900;
 $plugin->release = '1.0';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = ['tool_skills' => 2024012000];
-$plugin->supported = [400, 405];
+$plugin->supported = [400, 500];

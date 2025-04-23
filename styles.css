@@ -1,0 +1,19 @@
+/* Moodle 5.0 availability skills restrictions */
+
+.availability_skills {
+    .availability-group:not(.form-group) {
+        width: 100%;
+        display: flex;
+        label {
+            select {
+                height: 36px;
+            }
+            + label {
+                display: flex;
+            }
+            ~ input.form-control {
+                height: 36px;
+            }
+        }
+    }
+}

@@ -73,13 +73,13 @@ class frontend extends \core_availability\frontend {
      * @return array Array of parameters for the JavaScript function
      */
     protected function get_javascript_init_params($course, \cm_info $cm = null, \section_info $section = null) {
-        global $DB;
+        global $CFG;
 
         // Retrieve the skills that are enabled in the course.
         $skilldata = condition::fetch_skill_record($course->id);
         $levels = [];
 
-        $this->cacheinitparams = [$skilldata, \context_course::instance($course->id)->id];
+        $this->cacheinitparams = [$skilldata, \context_course::instance($course->id)->id, $CFG->branch];
         return $this->cacheinitparams;
     }
 

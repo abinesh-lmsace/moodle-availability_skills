@@ -20,9 +20,10 @@ M.availability_skills.form = Y.Object(M.core_availability.plugin);
  * @param {Array} skills Array of objects containing skills in the course.
  * @param {Int} contextid Id of the course context.
  */
-M.availability_skills.form.initInner = function(skills, contextid) {
+M.availability_skills.form.initInner = function(skills, contextid, branch) {
     this.skills = skills;
     this.contextID = contextid;
+    this.branch = branch;
 };
 
 /**
@@ -115,11 +116,14 @@ M.availability_skills.form.getNode = function(json) {
 
     var contextID = this.contextID;
 
+    var formgroup = this.branch < 500 ? 'form-group' : '';
+    var selectclass = this.branch >= 500 ? 'form-select' : 'custom-select';
+
     // Create HTML structure
     // Add to the choose skill in the html node.
     var html = '<span class="col-form-label"> ' + getString('title') + '</span>' +
-               '<span class="availability-group mb-3 d-flex"><label> <span class="accesshide">' + getString('chooseskill') +
-                '</span><select class="form-select" name="skills" title="' + getString('chooseskill') + '">' +
+               '<span class="availability-group ' + formgroup +'"><label> <span class="accesshide">' + getString('chooseskill') +
+                '</span><select class=" '+ selectclass + '" name="skills" title="' + getString('chooseskill') + '">' +
                 '<option value="0">' + getString('choosedots', 'moodle') + '</option>';
     Y.each(this.skills, function(skill) {
         html += '<option value="' + skill.id + '">' + skill.name + '</option>';
@@ -127,7 +131,7 @@ M.availability_skills.form.getNode = function(json) {
 
     // Added the choose condition type to the html node.
     html += '</select></label> <label> <span class="accesshide">' + getString('choosetype') + " </span>" +
-            '<select class="form-select" ' + 'name="ct" title="' + getString('choosetype') + '">' +
+            '<select class="'+ selectclass + '" ' + 'name="ct" title="' + getString('choosetype') + '">' +
             '<option value="0">' + getString('notinlevel') + '</option>' +
             '<option value="1">' + getString('exactlevel') + '</option>' +
             '<option value="2">' + getString('selectlevelorhigher') + '</option>' +
@@ -142,7 +146,7 @@ M.availability_skills.form.getNode = function(json) {
 
     // Add the level.
     html += '<span class="accesshide">' + getString('chooselevel') + '</span>'
-        + '<select class="form-select" name="level" title="' + getString('chooselevel') + '">' + emptylevel
+        + '<select class="'+ selectclass + '" name="level" title="' + getString('chooselevel') + '">' + emptylevel
         + '</select></label> <br><br>';
 
     // Add the points input html node.
@@ -150,8 +154,9 @@ M.availability_skills.form.getNode = function(json) {
             '<input name="points" type="text" class="form-control" style="width: 10em" title="' +
             getString('points') + '" placeholder="' + getString('points') + '" /></label></span>';
 
+    var formclass = this.branch >= 500 ? 'd-flex flex-wrap align-items-center' : 'form-inline';
     // Created the html node.
-    var node = Y.Node.create('<span class="d-flex flex-wrap align-items-center">' + html + '</span>');
+    var node = Y.Node.create('<span class=" '+ formclass + '">' + html + '</span>');
 
     // Set initial skill value.
     if (json.skill !== undefined &&
